@@ -1,0 +1,7 @@
+/bin/
+/installed/
+/tmp/
+/shell/target/
+/shell/gen/
+/*.zip
+/*.sha256

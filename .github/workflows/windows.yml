@@ -1,0 +1,51 @@
+name: Windows shell
+
+on:
+  push:
+    branches: ['main', 'codex/**']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: windows-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Rust behavior tests
+        working-directory: shell
+        run: cargo test --locked
+      - name: Build the Windows shell
+        shell: powershell
+        run: ./Build-Shell.ps1
+      - name: Executable HTTP and cleanup checks
+        shell: powershell
+        run: ./Test-Wrapper.ps1
+      - name: Installer archive and native exit checks
+        shell: powershell
+        run: ./Test-Install.ps1
+      - name: Package the compiled shell and installer
+        shell: powershell
+        run: |
+          $bundle = Join-Path $env:RUNNER_TEMP 'portable-web-shell'
+          ./Package.ps1 -Destination $bundle -Archive portable-web-shell-windows-x64.zip
+          $hash = (Get-FileHash portable-web-shell-windows-x64.zip -Algorithm SHA256).Hash.ToLowerInvariant()
+          [IO.File]::WriteAllText((Join-Path $PWD 'portable-web-shell-windows-x64.zip.sha256'), "$hash  portable-web-shell-windows-x64.zip`n", [Text.UTF8Encoding]::new($false))
+      - uses: actions/upload-artifact@v4
+        with:
+          name: portable-web-shell-windows-x64
+          path: |
+            portable-web-shell-windows-x64.zip
+            portable-web-shell-windows-x64.zip.sha256
+          if-no-files-found: error
