@@ -35,11 +35,15 @@ Requires Windows PowerShell 5.1 or later.
 - **Install**: `.\Install.cmd`
 - **Run**: `.\Run.cmd`
 - **Update**: `.\Update.cmd`
-- **Test**: `.\Test-Install.ps1`, `.\Test-Wrapper.ps1`
+- **Build Shell**: `.\Build-Shell.ps1` (Requires Rust and Microsoft C++ Build Tools. Rust/Tauri prerequisites are only needed to build the shell, not to run the prebuilt executable).
+- **Test**: `cargo test --locked` in `shell/`, `.\Test-Wrapper.ps1`, `.\Test-Install.ps1`
+- **Package**: `.\Package.ps1` (Creates the release ZIP).
 
 See [Install and run](docs/install-and-run.md), [Update and move](docs/update-and-move.md) and [Project recipes](docs/project-recipes.md) for more info.
 
 ## Configuration
+
+Switches are passed through the `.cmd` wrappers to `Manage.ps1` (e.g. `.\Install.cmd -Ref <tag>`).
 
 | Setting | Purpose | Default |
 | --- | --- | --- |
@@ -53,7 +57,7 @@ See [Verification and recovery](docs/verification-and-recovery.md) and [Build an
 
 ## Screenshots
 
-<!-- SCREENSHOT PLACEHOLDER: hero image of the portable web shell running DeepSeek -->
+<!-- SCREENSHOT PLACEHOLDER: the installer console building dependencies -->
 _Screenshot coming soon._
 
 ## Roadmap
@@ -64,4 +68,4 @@ _Screenshot coming soon._
 
 [MIT License](LICENSE)
 
-Based on walladanger/deepseek-harness
+Extracted from walladanger/deepseek-harness (portable-desktop/); see [SOURCE.md](SOURCE.md) and [THIRD-PARTY-NOTICES.txt](THIRD-PARTY-NOTICES.txt).
